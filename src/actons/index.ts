@@ -1,16 +1,16 @@
 "use server";
 
 import { db } from "@/db";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function updateSnippet(id: number, title: string, code: string) {
-  console.log("title:", title, "code:", code);
+export async function updateSnippet(id: number, code: string) {
+  console.log("code:", code);
   const snippet = await db.snippet.update({
     where: {
       id,
     },
     data: {
-      title,
       code,
     },
   });
@@ -24,7 +24,7 @@ export async function deleteSnippet(id: number) {
       id,
     },
   });
-
+  revalidatePath("/");
   redirect(`/`);
 }
 
@@ -57,7 +57,7 @@ export async function createSnippet(
       return { message: "An unknown error occured" };
     }
   }
-
+  revalidatePath("/");
   // Redirect user back to home page
   redirect("/");
 }
